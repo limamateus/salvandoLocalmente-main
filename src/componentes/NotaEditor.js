@@ -1,63 +1,82 @@
 import React, { useState } from "react"
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
-export default function NotaEditor({buscarNotas}) {
+import { Picker } from "@react-native-picker/picker"
+import { adicionarNota } from "../servicos/Notas"
+export default function NotaEditor({mostarNotas}) {
 
   const [texto, setTexto] = useState("")
   const [modalVisivel, setModalVisivel] = useState(false)
+  const [titulo, setTitulo] = useState("")
+  const [categoria, setCategoria] = useState('Pessoal')
+  async function salvarNota() {
 
-  async function salvarNota(){
-    const novoiId = await geraId()
     const umaNota = {
-      id: novoiId.toString(),
+      titulo: titulo,
+      categoria: categoria,
       texto: texto
-
     }
-    console.log(umaNota)
-    await AsyncStorage.setItem(umaNota.id, umaNota.texto)
-    await buscarNotas()
-    
+
+      await adicionarNota(umaNota)
+
+
+    await mostarNotas()
+
   }
 
- async function geraId(){
-    const todasAsChaves = AsyncStorage.getAllKeys() // aqui estou pegando todas as chaves
-    console.log(todasAsChaves)
 
-    if(todasAsChaves <= 0){
-      return 1
-    }
-    return (await todasAsChaves).length + 1
-  }
-
-  return(
+  return (
     <>
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisivel}
-        onRequestClose={() => {setModalVisivel(false)}}
+        onRequestClose={() => { setModalVisivel(false) }}
       >
         <View style={estilos.centralizaModal}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <View style={estilos.modal}>
               <Text style={estilos.modalTitulo}>Criar nota</Text>
+              <View style={estilos.modalPicker}>
+                <Text style={estilos.modalSubTitulo}>Categorias</Text>
+                <Picker
+                  selectedValue={categoria}
+                  onValueChange={novaCategoria => setCategoria(novaCategoria)}>
+
+                  <Picker.Item label="Pessoal" value="Pessoal" />
+                  <Picker.Item label="Trabalho" value="Trabalho" />
+                  <Picker.Item label="Outros" value="Outros" />
+
+                </Picker>
+
+
+
+              </View>
+              <Text style={estilos.modalSubTitulo}>Titulo da nota</Text>
+              <TextInput
+                style={estilos.modalInput}
+                onChangeText={novoTitulo => setTitulo(novoTitulo)}
+                placeholder="Digite um titulo"
+                value={titulo}
+
+              />
               <Text style={estilos.modalSubTitulo}>Conteúdo da nota</Text>
-              <TextInput 
+              <TextInput
                 style={estilos.modalInput}
                 multiline={true}
                 numberOfLines={3}
                 onChangeText={novoTexto => setTexto(novoTexto)}
                 placeholder="Digite aqui seu lembrete"
-                value={texto}/>
+                value={texto} />
               <View style={estilos.modalBotoes}>
                 <TouchableOpacity
-                  onPress={() => {salvarNota()}}
-                 style={estilos.modalBotaoSalvar}
-                
+                  onPress={() => { salvarNota() }}
+                  style={estilos.modalBotaoSalvar}
+
                 >
                   <Text style={estilos.modalBotaoTexto}>Salvar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={estilos.modalBotaoCancelar} onPress={() => {setModalVisivel(false)}}>
+                <TouchableOpacity style={estilos.modalBotaoCancelar} onPress={() => { setModalVisivel(false) }}>
                   <Text style={estilos.modalBotaoTexto}>Cancelar</Text>
                 </TouchableOpacity>
               </View>
@@ -65,7 +84,7 @@ export default function NotaEditor({buscarNotas}) {
           </ScrollView>
         </View>
       </Modal>
-      <TouchableOpacity onPress={() => {setModalVisivel(true)}} style={estilos.adicionarMemo}>
+      <TouchableOpacity onPress={() => { setModalVisivel(true) }} style={estilos.adicionarMemo}>
         <Text style={estilos.adicionarMemoTexto}>+</Text>
       </TouchableOpacity>
     </>
