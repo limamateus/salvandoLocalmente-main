@@ -33,3 +33,15 @@ export async function buscarNotas(){
         })
     })
 }
+
+
+export async function atualizarNota(nota){
+    return new Promise((resolver)=>{
+        console.log(nota)
+        db.transaction((transaction)=>{
+            transaction.executeSql("UPDATE Notas SET titulo = ?, categoria = ? , texto = ? WHERE id = ?;", [nota.titulo, nota.categoria, nota.texto, nota.id ], () =>{
+                resolver("Nota atualizado com sucesso!") 
+            } )
+        })
+    })
+}
