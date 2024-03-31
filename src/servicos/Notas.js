@@ -45,3 +45,15 @@ export async function atualizarNota(nota){
         })
     })
 }
+
+export async function deletarNota(nota){
+    return new Promise((resolver)=>{
+        console.log(nota)
+        db.transaction((transaction)=>{
+            transaction.executeSql("DELETE FROM Notas WHERE id = ?;", [nota.id], () =>{
+                resolver("Nota deletada com sucesso!") 
+            } )
+        })
+    })
+}
+
