@@ -57,3 +57,13 @@ export async function deletarNota(nota){
     })
 }
 
+
+export async function buscarNotasPorCategoria(categoria){
+    return new Promise((resolver)=>{
+        db.transaction((transaction)=>{
+            transaction.executeSql("SELECT * FROM Notas WHERE categoria = ?;", [categoria], (transaction, resultado) =>{
+                resolver(resultado.rows._array)  // devolver lista de notas do banco
+            } )
+        })
+    })
+}
